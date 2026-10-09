@@ -414,13 +414,13 @@ $('#slides').innerHTML = SLIDES.map((s,i)=>`<button class="slide${s.raw?' raw':'
 $('#dots').innerHTML = SLIDES.map((_,i)=>`<button type="button" aria-label="Баннер ${i+1}" data-dot="${i}" aria-current="${i===0}"></button>`).join('');
 
 const TILES = [['meatsets','30.webp','Мясо'],['pizza','pepperoni-1.webp','Пицца'],['shaurma','shaurma-klassicheskaya.webp','Шаурма'],['combo','nabor-kompaniya-1.webp','Комбо'],['hotdog','big-dog.webp','Хот-доги'],['snacks','frajs-s-bekonom-1.webp','Закуски'],['wok','udon-kuricza-1.webp','WOK'],['drinks','mol-koktejl.webp','Напитки']];
-$('#tiles').innerHTML = TILES.map(([id,img,t])=>`<button class="tile" type="button" data-sheet="${id}"><img src="img/${img}" alt="" loading="lazy" decoding="async" width="640" height="427">${t}</button>`).join('');
+$('#tiles').innerHTML = TILES.map(([id,img,t])=>`<button class="tile" type="button" data-sheet="${id}"><img src="img/${img}" alt="" decoding="async" width="640" height="427">${t}</button>`).join('');
 
 /* banner autoplay */
 const slidesEl = $('#slides'); let cur = 0, timer;
-const goSlide = i => { cur = (i+SLIDES.length)%SLIDES.length; slidesEl.scrollTo({left: slidesEl.clientWidth*cur, behavior:'smooth'}); };
+const goSlide = i => { cur = (i+SLIDES.length)%SLIDES.length; slidesEl.scrollTo({left: slidesEl.children[cur].offsetLeft - slidesEl.children[0].offsetLeft, behavior:'smooth'}); };
 const auto = () => { clearInterval(timer); if(!matchMedia('(prefers-reduced-motion: reduce)').matches) timer = setInterval(()=>goSlide(cur+1), 5000); };
-slidesEl.addEventListener('scroll', () => { const i = Math.round(slidesEl.scrollLeft/slidesEl.clientWidth); if(i!==cur){cur=i;} document.querySelectorAll('[data-dot]').forEach((d,k)=>d.setAttribute('aria-current', k===i)); }, {passive:true});
+slidesEl.addEventListener('scroll', () => { const step = slidesEl.children[1] ? slidesEl.children[1].offsetLeft - slidesEl.children[0].offsetLeft : slidesEl.clientWidth; const i = Math.round(slidesEl.scrollLeft/step); if(i!==cur){cur=i;} document.querySelectorAll('[data-dot]').forEach((d,k)=>d.setAttribute('aria-current', k===i)); }, {passive:true});
 slidesEl.addEventListener('pointerdown', auto);
 auto();
 
